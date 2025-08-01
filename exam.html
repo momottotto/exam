@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>시험 모드</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      max-width: 800px;
+      margin: auto;
+      background-color: #f9f9f9;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 28px;
+    }
+
+    #questionText {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 30px 0 10px 0;
+    }
+
+    #userAnswer {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    #submitBtn, #nextBtn {
+      padding: 12px 20px;
+      font-size: 16px;
+      margin-right: 10px;
+      cursor: pointer;
+      border: none;
+      background-color: #007acc;
+      color: white;
+      border-radius: 6px;
+    }
+
+    #nextBtn {
+      background-color: #28a745;
+    }
+
+    #feedback, #scoreBoard {
+      font-size: 16px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>🧪 랜덤 시험</h2>
+  <p id="questionText"></p>
+  <input type="text" id="userAnswer" placeholder="정답 입력" />
+  <button id="submitBtn">제출</button>
+  <button id="nextBtn" style="display:none;">다음 문제</button>
+
+  <div id="feedback"></div>
+  <div id="scoreBoard"></div>
+
+  <script>
+    // 문제 데이터 가져오기
+    const raw = localStorage.getItem("questions");
+    const questions = raw ? JSON.parse(raw) : [];
+
+    let score = 0;
+    let current = 0;
+    const usedIndices = [];
+    let currentIndex = null;
+
+    function getRandomIndex() {
+      let idx;
+      do {
+        idx = Math.floor(Math.random() * questions.length);
+      } while (usedIndices.includes(idx) && usedIndices.length < questions.length);
+      usedIndices.push(idx);
+      return idx;
+    }
+
+    function showQuestion() {
+      if (current >= questions.length) {
+        document.getElementById("questionText").textContent = "✅ 시험 종료!";
+        document.getElementById("submitBtn").style.display = "none";
+        document.getElementById("nextBtn").style.display = "none";
+        document.getElementById("userAnswer").style.display = "none";
+        document.getElementById("scoreBoard").textContent =
+          `최종 점수: ${score} / ${questions.length}`;
+        return;
+      }
+
+      currentIndex = getRandomIndex();
+      const q = questions[currentIndex];
+      document.getElementById("questionText").textContent = q.title;
+      document.getElementById("userAnswer").value = "";
+      document.getElementById("feedback").innerHTML = "";
+      document.getElementById("submitBtn").style.display = "inline-block";
+      document.getElementById("nextBtn").style.display = "none";
+    }
+
+    function calculateSimilarity(a, b) {
+      const wordSetA = new Set(a.toLowerCase().split(/\s+/));
+      const wordSetB = new Set(b.toLowerCase().split(/\s+/));
+      const common = [...wordSetA].filter(word => wordSetB.has(word));
+      return Math.floor((common.length / Math.max(wordSetA.size, wordSetB.size)) * 100);
+    }
+
+    document.getElementById("submitBtn").addEventListener("click", () => {
+      const userInput = document.getElementById("userAnswer").value.trim();
+      const correct = questions[currentIndex].answer.trim();
+      const similarity = calculateSimilarity(userInput, correct);
+
+      let feedbackMsg = `<strong>유사도:</strong> ${similarity}%<br>`;
+      feedbackMsg += `<strong>내 답변:</strong> ${userInput}<br>`;
+      feedbackMsg += `<strong>정답:</strong> ${correct}<br>`;
+
+      if (similarity >= 80) {
+        score++;
+        feedbackMsg += `✅ 거의 정답입니다!`;
+      } else {
+        feedbackMsg += `❌ 아쉽네요 다시 공부해보아요.`;
+      }
+
+      document.getElementById("feedback").innerHTML = feedbackMsg;
+      document.getElementById("submitBtn").style.display = "none";
+      document.getElementById("nextBtn").style.display = "inline-block";
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      current++;
+      showQuestion();
+    });
+
+    showQuestion();
+  </script>
+</body>
+</html>

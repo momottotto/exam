@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>문제 관리</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- 문제 입력 폼 -->
+    <div class="form-section">
+      <h1>📝 문제 관리</h1>
+      <form id="questionForm">
+        <input type="text" id="title" placeholder="문제 제목" required />
+        <input type="text" id="answer" placeholder="정답" required />
+        <button type="submit">저장하기</button>
+      </form>
+    </div>
+
+    <!-- 시험 시작 -->
+    <button id="startTestBtn">🎓 시험 시작</button>
+
+    <!-- 문제 리스트 -->
+    <h2>📋 저장된 문제 목록</h2>
+    <ul id="questionList"></ul>
+  </div>
+
+  <!-- Firebase 기능 포함한 app.js 불러오기 -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
