@@ -27,9 +27,11 @@ form {
   margin-top: 10px;
 }
 
-input {
+textarea {
   padding: 10px;
   font-size: 16px;
+  resize: vertical;
+  min-height: 80px;
 }
 
 button {
@@ -63,12 +65,14 @@ li {
 .question-title {
   font-weight: bold;
   font-size: 16px;
+  white-space: pre-wrap;
 }
 
 .question-answer {
   color: #007acc;
   font-style: italic;
   margin-top: 5px;
+  white-space: pre-wrap;
 }
 
 .edit-btn, .delete-btn {
@@ -106,6 +110,7 @@ li {
   font-size: 18px;
   color: #005a99;
   text-align: center;
+  cursor: pointer;
 }
 
 .question-group h3:hover {
