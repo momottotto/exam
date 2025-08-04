@@ -21,6 +21,7 @@
       font-size: 20px;
       font-weight: bold;
       margin: 30px 0 10px 0;
+      white-space: pre-wrap;
     }
 
     #userAnswer {
@@ -56,19 +57,23 @@
       border-radius: 8px;
       margin-top: 20px;
     }
+
+    img {
+      max-width: 100%;
+    }
   </style>
 </head>
 <body>
   <h2>🧪 랜덤 시험</h2>
-  <p id="questionText"></p>
+  <div id="questionText"></div>
   <input type="text" id="userAnswer" placeholder="정답 입력" />
   <button id="submitBtn">제출</button>
   <button id="nextBtn" style="display:none;">다음 문제</button>
 
   <div id="feedback"></div>
+  <div id="scoreBoard"></div>
 
   <script>
-    // 문제 데이터 가져오기
     const raw = localStorage.getItem("questions");
     const questions = raw ? JSON.parse(raw) : [];
 
@@ -88,7 +93,7 @@
 
     function showQuestion() {
       if (current >= questions.length) {
-        document.getElementById("questionText").textContent = "✅ 시험 종료!";
+        document.getElementById("questionText").innerHTML = "✅ 시험 종료!";
         document.getElementById("submitBtn").style.display = "none";
         document.getElementById("nextBtn").style.display = "none";
         document.getElementById("userAnswer").style.display = "none";
@@ -99,7 +104,7 @@
 
       currentIndex = getRandomIndex();
       const q = questions[currentIndex];
-      document.getElementById("questionText").textContent = q.title;
+      document.getElementById("questionText").innerHTML = q.title;
       document.getElementById("userAnswer").value = "";
       document.getElementById("feedback").innerHTML = "";
       document.getElementById("submitBtn").style.display = "inline-block";
