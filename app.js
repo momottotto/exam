@@ -60,7 +60,7 @@ async function deleteQuestion(id) {
   }
 }
 
-// 문제 목록 불러오기 (10개씩 묶기)
+// 문제 목록 불러오기
 async function loadQuestions() {
   const container = document.getElementById("questionList");
   container.innerHTML = "";
@@ -78,7 +78,7 @@ async function loadQuestions() {
       group.innerHTML = `<h3>📦 문제 묶음 ${Math.floor(i / 10) + 1}</h3>`;
 
       const groupList = document.createElement("ul");
-      groupList.style.display = "none"; // 🔽 처음엔 접혀 있도록 설정
+      groupList.style.display = "none";
 
       allQuestions.slice(i, i + 10).forEach((q, idx) => {
         const li = document.createElement("li");
@@ -104,9 +104,7 @@ async function loadQuestions() {
         groupList.appendChild(li);
       });
 
-      // 🔄 클릭 시 접기/펼치기 기능 추가
       const header = group.querySelector("h3");
-      header.style.cursor = "pointer";
       header.addEventListener("click", () => {
         groupList.style.display = groupList.style.display === "none" ? "block" : "none";
       });
@@ -119,7 +117,7 @@ async function loadQuestions() {
   }
 }
 
-// 시험 시작 기능
+// 시험 시작
 document.getElementById("startTestBtn").addEventListener("click", async () => {
   try {
     const snapshot = await getDocs(collection(db, "questions"));
@@ -137,6 +135,39 @@ document.getElementById("startTestBtn").addEventListener("click", async () => {
     alert("시험을 시작할 수 없습니다.");
   }
 });
+
+// 이미지 붙여넣기 처리 함수 (공통)
+function enableImagePaste(textareaId) {
+  const area = document.getElementById(textareaId);
+
+  area.addEventListener("paste", (event) => {
+    const items = event.clipboardData?.items;
+    if (!items) return;
+
+    for (const item of items) {
+      if (item.type.indexOf("image") !== -1) {
+        const file = item.getAsFile();
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64 = e.target.result;
+          const imgTag = `<img src="${base64}" alt="이미지" style="max-width:100%;">`;
+
+          const start = area.selectionStart;
+          const end = area.selectionEnd;
+          const text = area.value;
+
+          area.value = text.slice(0, start) + imgTag + text.slice(end);
+          area.selectionStart = area.selectionEnd = start + imgTag.length;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  });
+}
+
+// 이미지 붙여넣기 활성화
+enableImagePaste("title");
+enableImagePaste("answer");
 
 // 초기 로딩
 loadQuestions();
